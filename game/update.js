@@ -2,8 +2,6 @@ window.noname_update={
 	version:'1.9.104.1',
 	update:'1.9.104',
 	changeLog:[
-		'界小乔',
-		'新的默认联机地址',
 		'bug修复',
 		
 	],
