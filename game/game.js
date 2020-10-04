@@ -26,7 +26,7 @@
 	var lib={
 		configprefix:'noname_0.9_',
 		versionOL:27,
-		updateURLS:{
+		 updateURLS:{
 			coding:'https://nakamurayuri.coding.net/p/noname/d/noname/git/raw',
 			github:'https://raw.githubusercontent.com/libccy/noname',
 		},

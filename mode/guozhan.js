@@ -327,6 +327,7 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 				gz_xunyu:['male','wei',3,['quhu','new_jieming']],
 				gz_caopi:['male','wei',3,['xingshang','new_fangzhu'],['gzskin']],
 				gz_yuejin:['male','wei',4,['gzxiaoguo'],['gzskin']],
+				gz_zhonghui:['male','wei',4,['quanji', 'gzpaiyi']],
 
 				gz_liubei:['male','shu',4,['rerende']],
 				gz_guanyu:['male','shu',5,['wusheng']],
@@ -5523,6 +5524,79 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 					}
 				}
 			},
+			gzpaiyi:{
+				inherit:'paiyi',
+				audio:'paiyi',
+				mainSkill:true,
+				init:function(player){
+					if(player.checkMainSkill('gzpaiyi')){
+						player.removeMaxHp();
+					}
+				},
+				enable:'phaseUse',
+				usable:1,
+				audio:2,
+				audioname:['re_zhonghui'],
+				filter:function(event,player){
+					return player.storage.quanji&&player.storage.quanji.length>0;
+				},
+				chooseButton:{
+					dialog:function(event,player){
+						return ui.create.dialog('排异',player.storage.quanji,'hidden')
+					},
+					backup:function(links,player){
+						return {
+							audio:'paiyi',
+							audioname:['re_zhonghui'],
+							filterTarget:true,
+							filterCard:function(){return false},
+							selectCard:-1,
+							card:links[0],
+							delay:false,
+							content:lib.skill.gzpaiyi.contentx,
+							ai:{
+								order:10,
+								result:{
+									target:function(player,target){
+								if(player!=target) return 0;
+								if(player.hasSkill('requanji')||(player.countCards('h')+2<=player.hp+player.storage.quanji.length)) return 1;
+								return 0;
+							}
+						},
+							},
+						}
+					},
+					prompt:function(){return '请选择〖排异〗的目标'},
+				},
+				contentx:function(){
+					"step 0"
+					var card=lib.skill.gzpaiyi_backup.card;
+					game.cardsDiscard(card);
+					player.$throw(card);
+					player.storage.quanji.remove(card);
+					game.log(card,'进入了弃牌堆');
+					if(!player.storage.quanji.length){
+						player.unmarkSkill('quanji');
+					}
+					else{
+						player.markSkill('quanji');
+					}
+					player.syncStorage('quanji');
+					game.delayx();
+					"step 1"
+					target.draw(2);
+					"step 2"
+					if(target.countCards('h')>player.countCards('h')){
+						target.damage();
+					}
+				},
+				ai:{
+					order:1,
+					result:{
+						player:1,
+					}
+				}
+			},
 			ziliang:{
 				audio:2,
 				trigger:{global:'damageEnd'},
@@ -7624,6 +7698,9 @@ game.import('mode',function(lib,game,ui,get,ai,_status){
 			ziliang_info:'副将技，当与你势力相同的一名角色受到伤害后，你可以将一张“田”交给该角色 ',
 			gzjixi:'急袭',
 			gzjixi_info:'主将技，此武将牌减少半个阴阳鱼。你可以将一张“田”当作【顺手牵羊】使用。',
+			gzpaiyi:'排异',
+			gzpaiyi_backup: '排异',
+			gzpaiyi_info:'主将技，此武将牌减少半个阴阳鱼。出牌阶段限一次，你可以移去一张“权”并选择一名角色，令其摸两张牌，然后若其手牌数大于你，你对其造成1伤害。',
 			huyuan:'护援',
 			huyuan_info:'结束阶段开始时，你可以将一张装备牌置入一名角色的装备区，然后你可以弃置该角色距离为1的一名角色的一张牌。',
 			heyi:'鹤翼',
